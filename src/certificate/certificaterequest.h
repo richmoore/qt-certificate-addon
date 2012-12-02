@@ -33,6 +33,7 @@ public:
     QString errorString() const;
 
     // TODO: Include accessors for the fields
+    int version() const;
 
     QByteArray toPem();
     QByteArray toDer();

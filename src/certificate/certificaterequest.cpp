@@ -114,6 +114,14 @@ QString CertificateRequest::errorString() const
 }
 
 /*!
+  Returns the version of the certificate signing request.
+ */
+int CertificateRequest::version() const
+{
+    return gnutls_x509_crq_get_version(d->crq);
+}
+
+/*!
   Returns a QByteArray containing this request encoded as PEM.
  */
 QByteArray CertificateRequest::toPem()

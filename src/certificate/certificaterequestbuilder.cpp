@@ -47,12 +47,19 @@ QString CertificateRequestBuilder::errorString() const
     return QString::fromUtf8(gnutls_strerror(d->errno));
 }
 
+/*!
+  Set the version of the certificate signing request. This should
+  generally be set to 1.
+ */
 bool CertificateRequestBuilder::setVersion(int version)
 {
     d->errno = gnutls_x509_crq_set_version(d->crq, version);
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Returns the version of the certificate signing request.
+ */
 int CertificateRequestBuilder::version() const
 {
     int ver = gnutls_x509_crq_get_version(d->crq);
