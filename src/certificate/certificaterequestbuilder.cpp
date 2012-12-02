@@ -28,11 +28,20 @@ CertificateRequestBuilder::~CertificateRequestBuilder()
     delete d;
 }
 
+/*!
+  Returns the last error that occurred when using this object. The values
+  used are those of gnutls. If there has not been an error then it is
+  guaranteed to be 0.
+ */
 int CertificateRequestBuilder::error() const
 {
     return d->errno;
 }
 
+/*!
+  Returns a string describing the last error that occurred when using
+  this object.
+ */
 QString CertificateRequestBuilder::errorString() const
 {
     return QString::fromUtf8(gnutls_strerror(d->errno));
@@ -54,10 +63,7 @@ int CertificateRequestBuilder::version() const
 
 bool CertificateRequestBuilder::setKey(const QSslKey &qkey)
 {
-    gnutls_x509_privkey_t key;
-    gnutls_x509_privkey_init(&key);
-
-    d->errno = qsslkey_to_key(qkey, key);
+    gnutls_x509_privkey_t key = qsslkey_to_key(qkey, &d->errno);
     if (GNUTLS_E_SUCCESS != d->errno) {
         gnutls_x509_privkey_deinit(key);
         return false;
@@ -117,10 +123,7 @@ CertificateRequest CertificateRequestBuilder::signedRequest(const QSslKey &qkey)
 {
     CertificateRequest result;
 
-    gnutls_x509_privkey_t key;
-    gnutls_x509_privkey_init(&key);
-
-    d->errno = qsslkey_to_key(qkey, key);
+    gnutls_x509_privkey_t key = qsslkey_to_key(qkey, &d->errno);
     if (GNUTLS_E_SUCCESS != d->errno) {
         gnutls_x509_privkey_deinit(key);
         return result;

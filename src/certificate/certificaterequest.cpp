@@ -75,11 +75,20 @@ bool CertificateRequest::isNull() const
     return d->null;
 }
 
+/*!
+  Returns the last error that occurred when using this object. The values
+  used are those of gnutls. If there has not been an error then it is
+  guaranteed to be 0.
+ */
 int CertificateRequest::error() const
 {
     return d->errno;
 }
 
+/*!
+  Returns a string describing the last error that occurred when using
+  this object.
+ */
 QString CertificateRequest::errorString() const
 {
     return QString::fromUtf8(gnutls_strerror(d->errno));

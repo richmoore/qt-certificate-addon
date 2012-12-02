@@ -2,6 +2,7 @@
 
 #include <QByteArray>
 #include <QSslKey>
+#include <QSslCertificate>
 
 #include "utils_p.h"
 
@@ -17,8 +18,14 @@ void ensure_gnutls_init()
     }
 }
 
-int qsslkey_to_key(const QSslKey &qkey, gnutls_x509_privkey_t key)
+gnutls_x509_privkey_t qsslkey_to_key(const QSslKey &qkey, int *errno)
 {
+    gnutls_x509_privkey_t key;
+
+    *errno = gnutls_x509_privkey_init(&key);
+    if (GNUTLS_E_SUCCESS != *errno)
+        return 0;
+
     QByteArray buf(qkey.toPem());
 
     // Setup a datum
@@ -26,7 +33,40 @@ int qsslkey_to_key(const QSslKey &qkey, gnutls_x509_privkey_t key)
     buffer.data = (unsigned char *)(buf.data());
     buffer.size = buf.size();
 
-    return gnutls_x509_privkey_import(key, &buffer, GNUTLS_X509_FMT_PEM);
+    *errno = gnutls_x509_privkey_import(key, &buffer, GNUTLS_X509_FMT_PEM);
+    return key;
+}
+
+gnutls_x509_crt_t qsslcert_to_crt(const QSslCertificate &qcert, int *errno)
+{
+    gnutls_x509_crt_t cert;
+
+    *errno = gnutls_x509_crt_init(&cert);
+    if (GNUTLS_E_SUCCESS != *errno)
+        return 0;
+
+    QByteArray buf(qcert.toPem());
+
+    // Setup a datum
+    gnutls_datum_t buffer;
+    buffer.data = (unsigned char *)(buf.data());
+    buffer.size = buf.size();
+
+    // Import the cert
+    *errno = gnutls_x509_crt_import(cert, &buffer, GNUTLS_X509_FMT_PEM);
+    return cert;
+}
+
+QSslCertificate crt_to_qsslcert(gnutls_x509_crt_t crt, int *errno)
+{
+    QByteArray ba(4096, 0);
+    size_t size = ba.size();
+
+    *errno = gnutls_x509_crt_export(crt, GNUTLS_X509_FMT_PEM, ba.data(), &size);
+    if (GNUTLS_E_SUCCESS != *errno)
+        return QSslCertificate();
+
+    return QSslCertificate(ba);
 }
 
 QT_END_NAMESPACE_CERTIFICATE

@@ -49,6 +49,9 @@ QSslKey KeyBuilder::generate( QSsl::KeyAlgorithm algo, KeyStrength strength )
     case StrengthUltra:
         sec = GNUTLS_SEC_PARAM_ULTRA;
         break;
+    default:
+        qWarning("Unhandled strength %d passed to generate", uint(strength));
+        sec = GNUTLS_SEC_PARAM_NORMAL;
     }
 
     uint bits = gnutls_sec_param_to_pk_bits((algo == QSsl::Rsa) ? GNUTLS_PK_RSA : GNUTLS_PK_DSA, sec);

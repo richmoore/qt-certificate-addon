@@ -17,20 +17,6 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
   \brief The CertificateBuilder class is a tool for creating X.509 certificates.
 */
 
-static QByteArray certificate_to_bytearray(gnutls_x509_crt_t crt, gnutls_x509_crt_fmt_t format, int *errno)
-{
-    QByteArray ba(4096, 0);
-    size_t size = ba.size();
-
-    *errno = gnutls_x509_crt_export(crt, format, ba.data(), &size);
-
-    if (GNUTLS_E_SUCCESS != *errno)
-        return QByteArray();
-
-    ba.resize(size); // size has now been updated
-    return ba;
-}
-
 CertificateBuilder::CertificateBuilder()
     : d(new CertificateBuilderPrivate)
 {
@@ -44,11 +30,20 @@ CertificateBuilder::~CertificateBuilder()
     delete d;
 }
 
+/*!
+  Returns the last error that occurred when using this object. The values
+  used are those of gnutls. If there has not been an error then it is
+  guaranteed to be 0.
+ */
 int CertificateBuilder::error() const
 {
     return d->errno;
 }
 
+/*!
+  Returns a string describing the last error that occurred when using
+  this object.
+ */
 QString CertificateBuilder::errorString() const
 {
     return QString::fromUtf8(gnutls_strerror(d->errno));
@@ -159,10 +154,7 @@ bool CertificateBuilder::addSubjectKeyIdentifier()
 
 QSslCertificate CertificateBuilder::signedCertificate(const QSslKey &qkey)
 {
-    gnutls_x509_privkey_t key;
-    gnutls_x509_privkey_init(&key);
-
-    d->errno = qsslkey_to_key(qkey, key);
+    gnutls_x509_privkey_t key = qsslkey_to_key(qkey, &d->errno);
     if (GNUTLS_E_SUCCESS != d->errno) {
         gnutls_x509_privkey_deinit(key);
         return QSslCertificate();
@@ -185,8 +177,7 @@ QSslCertificate CertificateBuilder::signedCertificate(const QSslKey &qkey)
     if (GNUTLS_E_SUCCESS != d->errno)
         return QSslCertificate();
 
-    QByteArray buffer = certificate_to_bytearray(d->crt, GNUTLS_X509_FMT_PEM, &d->errno);
-    return QSslCertificate(buffer);
+    return crt_to_qsslcert(d->crt, &d->errno);    
 }
 
 QSslCertificate CertificateBuilder::signedCertificate(const QSslCertificate &qcacert, const QSslKey &qcakey)
@@ -194,10 +185,7 @@ QSslCertificate CertificateBuilder::signedCertificate(const QSslCertificate &qca
     //
     // Extract the CA key
     //
-    gnutls_x509_privkey_t key;
-    gnutls_x509_privkey_init(&key);
-
-    d->errno = qsslkey_to_key(qcakey, key);
+    gnutls_x509_privkey_t key = qsslkey_to_key(qcakey, &d->errno);
     if (GNUTLS_E_SUCCESS != d->errno) {
         gnutls_x509_privkey_deinit(key);
         return QSslCertificate();
@@ -215,22 +203,8 @@ QSslCertificate CertificateBuilder::signedCertificate(const QSslCertificate &qca
     //
     // Extract the CA cert
     //
-    gnutls_x509_crt_t cacrt;
-    d->errno = gnutls_x509_crt_init(&cacrt);
+    gnutls_x509_crt_t cacrt = qsslcert_to_crt(qcacert, &d->errno);
     if (GNUTLS_E_SUCCESS != d->errno) {
-        gnutls_x509_privkey_deinit(key);
-        return QSslCertificate();
-    }
-
-    // Setup a datum
-    QByteArray buf = qcacert.toPem();
-    gnutls_datum_t buffer;
-    buffer.data = (unsigned char *)(buf.data());
-    buffer.size = buf.size();
-
-    d->errno = gnutls_x509_crt_import(cacrt, &buffer, GNUTLS_X509_FMT_PEM);
-    if (GNUTLS_E_SUCCESS != d->errno) {
-        gnutls_x509_crt_deinit(cacrt);
         gnutls_x509_privkey_deinit(key);
         return QSslCertificate();
     }
@@ -246,8 +220,7 @@ QSslCertificate CertificateBuilder::signedCertificate(const QSslCertificate &qca
     if (GNUTLS_E_SUCCESS != d->errno)
         return QSslCertificate();
 
-    QByteArray result = certificate_to_bytearray(d->crt, GNUTLS_X509_FMT_PEM, &d->errno);
-    return QSslCertificate(result);
+    return crt_to_qsslcert(d->crt, &d->errno);
 }
 
 QT_END_NAMESPACE_CERTIFICATE
