@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = create_certificate
+TARGET = create_signed_certificate
 
 QT += network
 

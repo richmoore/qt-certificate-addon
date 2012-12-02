@@ -66,6 +66,7 @@ public:
     //bool addAuthorityKeyIdentifier(); // TODO: need cert absraction
 
     QSslCertificate signedCertificate(const QSslKey &key);
+    QSslCertificate signedCertificate(const QSslCertificate &cacert, const QSslKey &cakey);
 
 private:
     struct CertificateBuilderPrivate *d;

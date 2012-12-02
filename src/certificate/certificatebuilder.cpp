@@ -189,4 +189,65 @@ QSslCertificate CertificateBuilder::signedCertificate(const QSslKey &qkey)
     return QSslCertificate(buffer);
 }
 
+QSslCertificate CertificateBuilder::signedCertificate(const QSslCertificate &qcacert, const QSslKey &qcakey)
+{
+    //
+    // Extract the CA key
+    //
+    gnutls_x509_privkey_t key;
+    gnutls_x509_privkey_init(&key);
+
+    d->errno = qsslkey_to_key(qcakey, key);
+    if (GNUTLS_E_SUCCESS != d->errno) {
+        gnutls_x509_privkey_deinit(key);
+        return QSslCertificate();
+    };
+
+    gnutls_privkey_t abstractKey;
+    d->errno = gnutls_privkey_init(&abstractKey);
+    if (GNUTLS_E_SUCCESS != d->errno) {
+        gnutls_x509_privkey_deinit(key);
+        return QSslCertificate();
+    }
+
+    gnutls_privkey_import_x509(abstractKey, key, GNUTLS_PRIVKEY_IMPORT_AUTO_RELEASE);
+
+    //
+    // Extract the CA cert
+    //
+    gnutls_x509_crt_t cacrt;
+    d->errno = gnutls_x509_crt_init(&cacrt);
+    if (GNUTLS_E_SUCCESS != d->errno) {
+        gnutls_x509_privkey_deinit(key);
+        return QSslCertificate();
+    }
+
+    // Setup a datum
+    QByteArray buf = qcacert.toPem();
+    gnutls_datum_t buffer;
+    buffer.data = (unsigned char *)(buf.data());
+    buffer.size = buf.size();
+
+    d->errno = gnutls_x509_crt_import(cacrt, &buffer, GNUTLS_X509_FMT_PEM);
+    if (GNUTLS_E_SUCCESS != d->errno) {
+        gnutls_x509_crt_deinit(cacrt);
+        gnutls_x509_privkey_deinit(key);
+        return QSslCertificate();
+    }
+
+    //
+    // Sign the cert
+    //
+    d->errno = gnutls_x509_crt_privkey_sign(d->crt, cacrt, abstractKey, GNUTLS_DIG_SHA1, 0);
+
+    gnutls_x509_crt_deinit(cacrt);
+    gnutls_x509_privkey_deinit(key);
+
+    if (GNUTLS_E_SUCCESS != d->errno)
+        return QSslCertificate();
+
+    QByteArray result = certificate_to_bytearray(d->crt, GNUTLS_X509_FMT_PEM, &d->errno);
+    return QSslCertificate(result);
+}
+
 QT_END_NAMESPACE_CERTIFICATE
