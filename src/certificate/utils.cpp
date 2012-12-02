@@ -69,4 +69,16 @@ QSslCertificate crt_to_qsslcert(gnutls_x509_crt_t crt, int *errno)
     return QSslCertificate(ba);
 }
 
+QSslKey key_to_qsslkey(gnutls_x509_privkey_t key, QSsl::KeyAlgorithm algo, int *errno)
+{
+    QByteArray ba(4096, 0);
+    size_t size = ba.size();
+
+    *errno = gnutls_x509_privkey_export(key, GNUTLS_X509_FMT_PEM, ba.data(), &size);
+    if (GNUTLS_E_SUCCESS != *errno)
+        return QSslKey();
+
+    return QSslKey(ba, algo);
+}
+
 QT_END_NAMESPACE_CERTIFICATE
