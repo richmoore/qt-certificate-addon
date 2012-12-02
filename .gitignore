@@ -1,0 +1,8 @@
+*.o
+*~
+lib*.so
+lib*.so.*
+Makefile
+examples/create_certificate/create_certificate
+doc/html
+
