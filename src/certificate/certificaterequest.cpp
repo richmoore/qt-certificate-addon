@@ -13,6 +13,10 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
   certificate signing request.
 */
 
+/*!
+  \internal
+  Convert a crq to a PEM or DER encoded QByteArray.
+ */
 static QByteArray request_to_bytearray(gnutls_x509_crq_t crq, gnutls_x509_crt_fmt_t format, int *errno)
 {
     QByteArray ba(4096, 0);
@@ -41,16 +45,25 @@ CertificateRequestPrivate::~CertificateRequestPrivate()
     gnutls_x509_crq_deinit(crq);
 }
 
+/*!
+  Create a null CertificateRequest.
+ */
 CertificateRequest::CertificateRequest()
     : d(new CertificateRequestPrivate)
 {
 }
 
+/*!
+  Create a CertificateRequest that is a copy of other.
+ */
 CertificateRequest::CertificateRequest(const CertificateRequest &other)
     : d(other.d)
 {
 }
 
+/*!
+  Load a CertificateRequest from the specified QIODevice using the specified format.
+ */
 CertificateRequest::CertificateRequest(QIODevice *io, QSsl::EncodingFormat format)
     : d(new CertificateRequestPrivate)
 {
@@ -66,10 +79,16 @@ CertificateRequest::CertificateRequest(QIODevice *io, QSsl::EncodingFormat forma
         d->null = false;
 }
 
+/*!
+  Clean up.
+ */
 CertificateRequest::~CertificateRequest()
 {
 }
 
+/*!
+  Returns true if this CertificateRequest is null (uninitialised).
+ */
 bool CertificateRequest::isNull() const
 {
     return d->null;
@@ -94,11 +113,17 @@ QString CertificateRequest::errorString() const
     return QString::fromUtf8(gnutls_strerror(d->errno));
 }
 
+/*!
+  Returns a QByteArray containing this request encoded as PEM.
+ */
 QByteArray CertificateRequest::toPem()
 {
     return request_to_bytearray(d->crq, GNUTLS_X509_FMT_PEM, &d->errno);
 }
 
+/*!
+  Returns a QByteArray containing this request encoded as DER.
+ */
 QByteArray CertificateRequest::toDer()
 {
     return request_to_bytearray(d->crq, GNUTLS_X509_FMT_DER, &d->errno);
