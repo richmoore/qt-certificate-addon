@@ -28,6 +28,13 @@ void tst_CertificateRequest::loadCrq()
 
     QVERIFY(!csr.isNull());
     QVERIFY(csr.version() == 1);
+
+    QFile f2("requests/test-ocsp-good-req.pem");
+    f2.open(QIODevice::ReadOnly);
+    QByteArray filePem = f2.readAll();
+    f2.close();
+
+    QVERIFY(filePem == csr.toPem());
 }
 
 QTEST_MAIN(tst_CertificateRequest)
