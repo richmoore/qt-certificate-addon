@@ -68,6 +68,9 @@ int CertificateRequestBuilder::version() const
     return ver;
 }
 
+/*!
+  Sets the key that will be used for the reqest.
+ */
 bool CertificateRequestBuilder::setKey(const QSslKey &qkey)
 {
     gnutls_x509_privkey_t key = qsslkey_to_key(qkey, &d->errno);
@@ -126,6 +129,9 @@ bool CertificateRequestBuilder::addNameEntry(const QByteArray &oid, const QByteA
     return GNUTLS_E_SUCCESS == d->errno;   
 }
 
+/*!
+  Signs the request with the specified key and returns the signed request.
+ */
 CertificateRequest CertificateRequestBuilder::signedRequest(const QSslKey &qkey)
 {
     CertificateRequest result;

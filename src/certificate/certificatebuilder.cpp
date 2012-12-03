@@ -95,12 +95,24 @@ bool CertificateBuilder::setExpirationTime(const QDateTime &date)
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Copies the extensions from the request to the certificate being created. This
+  should only be done after checking that the request is safe, since otherwise
+  you could potentially copy extensions that grant the generated certificate
+  facilities you did not intend.
+ */
 bool CertificateBuilder::copyRequestExtensions(const CertificateRequest &crq)
 {
     d->errno = gnutls_x509_crt_set_crq_extensions(d->crt, crq.d->crq);
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Add the basic constraints extension. This allows you to specify if the
+  certificate being created is a CA (ie. may sign certificates), and the
+  maximum length of the chain that is allowed if you grant it that
+  permission. By default the pathLength is unlimited.
+ */
 bool CertificateBuilder::setBasicConstraints(bool ca, int pathLength)
 {
     d->errno = gnutls_x509_crt_set_basic_constraints (d->crt, ca, pathLength);
