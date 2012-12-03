@@ -49,30 +49,46 @@ QString CertificateBuilder::errorString() const
     return QString::fromUtf8(gnutls_strerror(d->errno));
 }
 
+/*!
+  Set the request that the certificate will be generated from.
+ */
 bool CertificateBuilder::setRequest(const CertificateRequest &crq)
 {
     d->errno = gnutls_x509_crt_set_crq(d->crt, crq.d->crq);
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Set the version of the X.509 certificate. In general the version will be 3.
+ */
 bool CertificateBuilder::setVersion(int version)
 {
     d->errno = gnutls_x509_crt_set_version(d->crt, version);
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Set the serial number of the certificate. This should be a random value
+  containing a large amount of entropy.
+ */
 bool CertificateBuilder::setSerial(const QByteArray &serial)
 {
     d->errno = gnutls_x509_crt_set_serial(d->crt, serial.constData(), serial.size());
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Set the time at which the certificate will become valid.
+ */
 bool CertificateBuilder::setActivationTime(const QDateTime &date)
 {
     d->errno = gnutls_x509_crt_set_activation_time(d->crt, date.toTime_t());
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Set the time after which the certificate is no longer valid.
+ */
 bool CertificateBuilder::setExpirationTime(const QDateTime &date)
 {
     d->errno = gnutls_x509_crt_set_expiration_time(d->crt, date.toTime_t());
