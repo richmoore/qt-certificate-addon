@@ -15,6 +15,7 @@ void ensure_gnutls_init()
     // TODO: protect with a mutex
     if (!done) {
         gnutls_global_init();
+        done = true;
     }
 }
 
