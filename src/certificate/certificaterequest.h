@@ -7,6 +7,7 @@
 #include <QtCore/qshareddata.h>
 
 #include "certificate_global.h"
+#include "certificate.h"
 
 class QIODevice;
 
@@ -34,6 +35,9 @@ public:
 
     // TODO: Include accessors for the fields
     int version() const;
+
+    // TODO: QList<QByteArray>?
+    QStringList nameEntryInfo(Certificate::EntryType attribute);
 
     QByteArray toPem();
     QByteArray toDer();

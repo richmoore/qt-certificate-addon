@@ -86,38 +86,11 @@ bool CertificateRequestBuilder::setKey(const QSslKey &qkey)
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
-bool CertificateRequestBuilder::addNameEntry(EntryType type, const QByteArray &value)
+bool CertificateRequestBuilder::addNameEntry(Certificate::EntryType type, const QByteArray &value)
 {
-    QByteArray oid;
-
-    // TODO: More common name entry types
-
-    switch(type) {
-    case EntryCountryName:
-        oid = QByteArray(GNUTLS_OID_X520_COUNTRY_NAME);
-        break;
-    case EntryOrganizationName:
-        oid = QByteArray(GNUTLS_OID_X520_ORGANIZATION_NAME);
-        break;
-    case EntryOrganizationalUnitName:
-        oid = QByteArray(GNUTLS_OID_X520_ORGANIZATIONAL_UNIT_NAME);
-        break;
-    case EntryCommonName:
-        oid = QByteArray(GNUTLS_OID_X520_COMMON_NAME);
-        break;
-    case EntryLocalityName:
-        oid = QByteArray(GNUTLS_OID_X520_LOCALITY_NAME);
-        break;
-    case EntryStateOrProvinceName:
-        oid = QByteArray(GNUTLS_OID_X520_STATE_OR_PROVINCE_NAME);
-        break;
-    case EntryEmail:
-        oid = QByteArray(GNUTLS_OID_PKCS9_EMAIL);
-        break;
-    default:
-        qWarning("Unhandled name entry type %d", int(type));
+    QByteArray oid = entrytype_to_oid(type);
+    if (oid.isNull())
         return false;
-    }
 
     return addNameEntry(oid, value);
 }

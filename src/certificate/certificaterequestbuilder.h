@@ -6,6 +6,7 @@
 #include <QSslKey>
 
 #include "certificaterequest.h"
+#include "certificate.h"
 
 #include "certificate_global.h"
 
@@ -17,16 +18,6 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
 class Q_CERTIFICATE_EXPORT CertificateRequestBuilder
 {
 public:
-    enum EntryType {
-        EntryCountryName,
-        EntryOrganizationName,
-        EntryOrganizationalUnitName,
-        EntryCommonName,
-        EntryLocalityName,
-        EntryStateOrProvinceName,
-        EntryEmail
-    };
-
     CertificateRequestBuilder();
     ~CertificateRequestBuilder();
 
@@ -38,7 +29,7 @@ public:
 
     bool setKey(const QSslKey &key);
 
-    bool addNameEntry(EntryType type, const QByteArray &value);
+    bool addNameEntry(Certificate::EntryType type, const QByteArray &value);
     bool addNameEntry(const QByteArray &oid, const QByteArray &value, bool raw=false);
 
     CertificateRequest signedRequest(const QSslKey &key);

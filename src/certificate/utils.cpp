@@ -8,6 +8,8 @@
 
 QT_BEGIN_NAMESPACE_CERTIFICATE
 
+using namespace Certificate;
+
 void ensure_gnutls_init()
 {
     static bool done = false;
@@ -17,6 +19,41 @@ void ensure_gnutls_init()
         gnutls_global_init();
         done = true;
     }
+}
+
+QByteArray entrytype_to_oid(Certificate::EntryType type)
+{
+    QByteArray oid;
+
+    // TODO: More common name entry types
+
+    switch(type) {
+    case EntryCountryName:
+        oid = QByteArray(GNUTLS_OID_X520_COUNTRY_NAME);
+        break;
+    case EntryOrganizationName:
+        oid = QByteArray(GNUTLS_OID_X520_ORGANIZATION_NAME);
+        break;
+    case EntryOrganizationalUnitName:
+        oid = QByteArray(GNUTLS_OID_X520_ORGANIZATIONAL_UNIT_NAME);
+        break;
+    case EntryCommonName:
+        oid = QByteArray(GNUTLS_OID_X520_COMMON_NAME);
+        break;
+    case EntryLocalityName:
+        oid = QByteArray(GNUTLS_OID_X520_LOCALITY_NAME);
+        break;
+    case EntryStateOrProvinceName:
+        oid = QByteArray(GNUTLS_OID_X520_STATE_OR_PROVINCE_NAME);
+        break;
+    case EntryEmail:
+        oid = QByteArray(GNUTLS_OID_PKCS9_EMAIL);
+        break;
+    default:
+        qWarning("Unhandled name entry type %d", int(type));
+    }
+
+    return oid;
 }
 
 gnutls_x509_privkey_t qsslkey_to_key(const QSslKey &qkey, int *errno)

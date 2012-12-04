@@ -1,5 +1,7 @@
 #include <QByteArray>
 #include <QIODevice>
+#include <QStringList>
+#include <QDebug>
 
 #include "utils_p.h"
 
@@ -119,6 +121,28 @@ QString CertificateRequest::errorString() const
 int CertificateRequest::version() const
 {
     return gnutls_x509_crq_get_version(d->crq);
+}
+
+QStringList CertificateRequest::nameEntryInfo(Certificate::EntryType attribute)
+{
+    QStringList result;
+    QByteArray oid = entrytype_to_oid(attribute);
+    if (oid.isNull())
+        return result;
+
+    int index = 0;
+    QByteArray buffer(1024, 0);
+    size_t size = buffer.size();
+    do {
+        d->errno = gnutls_x509_crq_get_dn_by_oid(d->crq, oid.constData(), index, false, buffer.data(), &size);
+
+        if (GNUTLS_E_SUCCESS == d->errno)
+            result << QString::fromUtf8(buffer);
+
+        index++;
+    } while(GNUTLS_E_SUCCESS == d->errno);
+
+    return result;
 }
 
 /*!

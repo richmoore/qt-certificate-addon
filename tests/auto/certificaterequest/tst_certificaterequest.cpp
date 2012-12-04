@@ -11,6 +11,7 @@ class tst_CertificateRequest : public QObject
 private slots:
     void checkNull();
     void loadCrq();
+    void checkEntries();
 };
 
 void tst_CertificateRequest::checkNull()
@@ -36,6 +37,23 @@ void tst_CertificateRequest::loadCrq()
 
     QVERIFY(filePem == csr.toPem());
 }
+
+void tst_CertificateRequest::checkEntries()
+{
+    QFile f("requests/test-ocsp-good-req.pem");
+    f.open(QIODevice::ReadOnly);
+    CertificateRequest csr(&f);
+    f.close();
+
+    QVERIFY( QString("example.com") ==  csr.nameEntryInfo(Certificate::EntryCommonName)[0]);
+    QVERIFY( QString("Some organisation") ==  csr.nameEntryInfo(Certificate::EntryOrganizationName)[0]);
+    QVERIFY( QString("UK") ==  csr.nameEntryInfo(Certificate::EntryCountryName)[0]);
+    QVERIFY( QString("test@example.com") ==  csr.nameEntryInfo(Certificate::EntryEmail)[0]);
+    QVERIFY( QString("Lancashire") ==  csr.nameEntryInfo(Certificate::EntryStateOrProvinceName)[0]);
+    QVERIFY( QString("Some organisation") ==  csr.nameEntryInfo(Certificate::EntryOrganizationName)[0]);
+    QVERIFY( csr.nameEntryInfo(Certificate::EntryLocalityName).length() == 0);
+}
+
 
 QTEST_MAIN(tst_CertificateRequest)
 #include "tst_certificaterequest.moc"

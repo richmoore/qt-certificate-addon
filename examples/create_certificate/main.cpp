@@ -8,6 +8,7 @@
 #include "certificaterequestbuilder.h"
 #include "certificaterequest.h"
 #include "certificatebuilder.h"
+#include "certificate.h"
 
 QT_USE_NAMESPACE_CERTIFICATE
 
@@ -23,10 +24,10 @@ int main(int argc, char **argv)
     CertificateRequestBuilder reqbuilder;
     reqbuilder.setVersion(1);
     reqbuilder.setKey(key);
-    reqbuilder.addNameEntry(CertificateRequestBuilder::EntryCountryName, "GB");
-    reqbuilder.addNameEntry(CertificateRequestBuilder::EntryOrganizationName, "Westpoint");
-    reqbuilder.addNameEntry(CertificateRequestBuilder::EntryOrganizationName, "West");
-    reqbuilder.addNameEntry(CertificateRequestBuilder::EntryCommonName, "www.example.com");
+    reqbuilder.addNameEntry(Certificate::EntryCountryName, "GB");
+    reqbuilder.addNameEntry(Certificate::EntryOrganizationName, "Westpoint");
+    reqbuilder.addNameEntry(Certificate::EntryOrganizationName, "West");
+    reqbuilder.addNameEntry(Certificate::EntryCommonName, "www.example.com");
 
     // Sign the request
     CertificateRequest req = reqbuilder.signedRequest(key);

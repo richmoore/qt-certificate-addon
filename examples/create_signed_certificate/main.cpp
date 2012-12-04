@@ -8,6 +8,7 @@
 #include "certificaterequestbuilder.h"
 #include "certificaterequest.h"
 #include "certificatebuilder.h"
+#include "certificate.h"
 
 QT_USE_NAMESPACE_CERTIFICATE
 
@@ -27,10 +28,10 @@ int main(int argc, char **argv)
     CertificateRequestBuilder careqbuilder;
     careqbuilder.setVersion(1);
     careqbuilder.setKey(cakey);
-    careqbuilder.addNameEntry(CertificateRequestBuilder::EntryCountryName, "GB");
-    careqbuilder.addNameEntry(CertificateRequestBuilder::EntryOrganizationName, "Westpoint CA Key");
-    careqbuilder.addNameEntry(CertificateRequestBuilder::EntryOrganizationName, "West");
-    careqbuilder.addNameEntry(CertificateRequestBuilder::EntryCommonName, "www.example.com");
+    careqbuilder.addNameEntry(Certificate::EntryCountryName, "GB");
+    careqbuilder.addNameEntry(Certificate::EntryOrganizationName, "Westpoint CA Key");
+    careqbuilder.addNameEntry(Certificate::EntryOrganizationName, "West");
+    careqbuilder.addNameEntry(Certificate::EntryCommonName, "www.example.com");
 
     // Sign the request
     CertificateRequest careq = careqbuilder.signedRequest(cakey);

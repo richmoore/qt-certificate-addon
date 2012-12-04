@@ -6,8 +6,10 @@
 #include <gnutls/x509.h>
 
 #include <QtNetwork/QSsl>
+#include <QtCore/QByteArray>
 
 #include "certificate_global.h"
+#include "certificate.h"
 
 class QSslKey;
 class QSslCertificate;
@@ -15,6 +17,8 @@ class QSslCertificate;
 QT_BEGIN_NAMESPACE_CERTIFICATE
 
 void ensure_gnutls_init();
+
+QByteArray entrytype_to_oid(Certificate::EntryType type);
 
 gnutls_x509_privkey_t qsslkey_to_key(const QSslKey &qkey, int *errno);
 gnutls_x509_crt_t qsslcert_to_crt(const QSslCertificate &qcert, int *errno);
