@@ -45,13 +45,28 @@ void tst_CertificateRequest::checkEntries()
     CertificateRequest csr(&f);
     f.close();
 
-    QVERIFY( QString("example.com") ==  csr.nameEntryInfo(Certificate::EntryCommonName)[0]);
-    QVERIFY( QString("Some organisation") ==  csr.nameEntryInfo(Certificate::EntryOrganizationName)[0]);
-    QVERIFY( QString("UK") ==  csr.nameEntryInfo(Certificate::EntryCountryName)[0]);
-    QVERIFY( QString("test@example.com") ==  csr.nameEntryInfo(Certificate::EntryEmail)[0]);
-    QVERIFY( QString("Lancashire") ==  csr.nameEntryInfo(Certificate::EntryStateOrProvinceName)[0]);
-    QVERIFY( QString("Some organisation") ==  csr.nameEntryInfo(Certificate::EntryOrganizationName)[0]);
-    QVERIFY( csr.nameEntryInfo(Certificate::EntryLocalityName).length() == 0);
+    QStringList commonName;
+    commonName << "example.com";
+    QVERIFY(commonName ==  csr.nameEntryInfo(Certificate::EntryCommonName));
+
+    QStringList organizationName;
+    organizationName << "Some organisation";
+    QVERIFY(organizationName ==  csr.nameEntryInfo(Certificate::EntryOrganizationName));
+
+    QStringList countryName;
+    countryName << "UK";
+    QVERIFY(countryName ==  csr.nameEntryInfo(Certificate::EntryCountryName));
+
+    QStringList email;
+    email << "test@example.com";
+    QVERIFY(email ==  csr.nameEntryInfo(Certificate::EntryEmail));
+
+    QStringList stateOrProvinceName;
+    stateOrProvinceName << "Lancashire";
+    QVERIFY(stateOrProvinceName ==  csr.nameEntryInfo(Certificate::EntryStateOrProvinceName));
+
+    QStringList localityName;
+    QVERIFY(localityName == csr.nameEntryInfo(Certificate::EntryLocalityName));
 }
 
 
