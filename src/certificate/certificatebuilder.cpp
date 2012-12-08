@@ -180,6 +180,34 @@ bool CertificateBuilder::addSubjectKeyIdentifier()
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+bool CertificateBuilder::addAuthorityKeyIdentifier(const QSslCertificate &qcacert)
+{
+    gnutls_x509_crt_t cacrt = qsslcert_to_crt(qcacert, &d->errno);
+    if (GNUTLS_E_SUCCESS != d->errno)
+        return false;
+
+    QByteArray ba(128, 0); // Normally 20 bytes (SHA1)
+    size_t size = ba.size();
+
+    // Try using the subject keyid
+    d->errno = gnutls_x509_crt_get_subject_key_id (cacrt, reinterpret_cast<unsigned char *>(ba.data()), &size, NULL);
+
+    // Or fallback to creating it
+    if (GNUTLS_E_SUCCESS != d->errno) {
+        d->errno = gnutls_x509_crt_get_key_id(cacrt, 0, reinterpret_cast<unsigned char *>(ba.data()), &size);
+
+        if (GNUTLS_E_SUCCESS != d->errno) {
+            gnutls_x509_crt_deinit(cacrt);
+            return false;
+        }
+    }
+
+    gnutls_x509_crt_deinit(cacrt);
+    d->errno = gnutls_x509_crt_set_authority_key_id(d->crt, reinterpret_cast<const unsigned char *>(ba.constData()), size);
+
+    return GNUTLS_E_SUCCESS == d->errno;
+}
+
 QSslCertificate CertificateBuilder::signedCertificate(const QSslKey &qkey)
 {
     gnutls_x509_privkey_t key = qsslkey_to_key(qkey, &d->errno);

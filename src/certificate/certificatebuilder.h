@@ -61,9 +61,9 @@ public:
     // Usage
     bool setKeyUsage(KeyUsageFlags usage);
 
+    // Key identifiers
     bool addSubjectKeyIdentifier();
-
-    //bool addAuthorityKeyIdentifier(); // TODO: need cert absraction
+    bool addAuthorityKeyIdentifier(const QSslCertificate &cacert);
 
     QSslCertificate signedCertificate(const QSslKey &key);
     QSslCertificate signedCertificate(const QSslCertificate &cacert, const QSslKey &cakey);

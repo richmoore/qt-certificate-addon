@@ -99,6 +99,7 @@ int main(int argc, char **argv)
     leafbuilder.addKeyPurpose(CertificateBuilder::PurposeWebServer);
     leafbuilder.setKeyUsage(CertificateBuilder::UsageKeyAgreement|CertificateBuilder::UsageKeyEncipherment);
     leafbuilder.addSubjectKeyIdentifier();
+    leafbuilder.addAuthorityKeyIdentifier(cacert);
 
     QSslCertificate leafcert = leafbuilder.signedCertificate(cacert, cakey);
     save_certificate("leaf.crt", leafcert);
