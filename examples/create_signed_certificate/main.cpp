@@ -12,68 +12,94 @@
 
 QT_USE_NAMESPACE_CERTIFICATE
 
+void save_key(const QString &filename, const QSslKey &key)
+{
+    QFile k(filename);
+    k.open(QIODevice::WriteOnly);
+    k.write(key.toPem());
+    k.close();
+}
+
+void save_request(const QString &filename, CertificateRequest &req)
+{
+    QFile k(filename);
+    k.open(QIODevice::WriteOnly);
+    k.write(req.toPem());
+    k.close();
+}
+
+void save_certificate(const QString &filename, const QSslCertificate &crt)
+{
+    QFile k(filename);
+    k.open(QIODevice::WriteOnly);
+    k.write(crt.toPem());
+    k.close();
+}
+
 int main(int argc, char **argv)
 {
     //
     // Create the CA key
     //
-
-    QSslKey cakey = KeyBuilder::generate( QSsl::Rsa, KeyBuilder::StrengthNormal );
-
-    QFile k("ca.key");
-    k.open(QIODevice::WriteOnly);
-    k.write(cakey.toPem());
-    k.close();
+    QSslKey cakey = KeyBuilder::generate(QSsl::Rsa, KeyBuilder::StrengthNormal);
+    save_key("ca.key", cakey);
 
     CertificateRequestBuilder careqbuilder;
     careqbuilder.setVersion(1);
     careqbuilder.setKey(cakey);
     careqbuilder.addNameEntry(Certificate::EntryCountryName, "GB");
     careqbuilder.addNameEntry(Certificate::EntryOrganizationName, "Westpoint CA Key");
-    careqbuilder.addNameEntry(Certificate::EntryOrganizationName, "West");
-    careqbuilder.addNameEntry(Certificate::EntryCommonName, "www.example.com");
+    careqbuilder.addNameEntry(Certificate::EntryOrganizationName, "Westpoint");
 
     // Sign the request
     CertificateRequest careq = careqbuilder.signedRequest(cakey);
-
-    //
-    // Export the results
-    //
-    QFile f("ca.req");
-    f.open(QIODevice::WriteOnly);
-    f.write(careq.toPem());
-    f.close();
+    save_request("ca.req", careq);
 
     //
     // Now make a certificate
     //
-    CertificateBuilder builder;
-    builder.setRequest(careq);
+    CertificateBuilder cabuilder;
+    cabuilder.setRequest(careq);
 
-    builder.setVersion(3);
-    builder.setSerial("helloworld");
-    builder.setActivationTime(QDateTime::currentDateTimeUtc());
-    builder.setExpirationTime(QDateTime::currentDateTimeUtc());
-    builder.setBasicConstraints(true);
-    builder.setKeyUsage(CertificateBuilder::UsageCrlSign|CertificateBuilder::UsageKeyCertSign);
-    builder.addSubjectKeyIdentifier();
+    cabuilder.setVersion(3);
+    cabuilder.setSerial("helloworld");
+    cabuilder.setActivationTime(QDateTime::currentDateTimeUtc());
+    cabuilder.setExpirationTime(QDateTime::currentDateTimeUtc());
+    cabuilder.setBasicConstraints(true);
+    cabuilder.setKeyUsage(CertificateBuilder::UsageCrlSign|CertificateBuilder::UsageKeyCertSign);
+    cabuilder.addSubjectKeyIdentifier();
 
-    QSslCertificate cacert = builder.signedCertificate(cakey);
-
-    QFile c("ca.crt");
-    c.open(QIODevice::WriteOnly);
-    c.write(cacert.toPem());
-    c.close();
+    QSslCertificate cacert = cabuilder.signedCertificate(cakey);
+    save_certificate("ca.crt", cacert);
 
     //
     // Create the leaf
     //
-    builder.setSerial("XXXXXXXXXXXXXXXXXXXXXXX");
+    QSslKey leafkey = KeyBuilder::generate(QSsl::Rsa, KeyBuilder::StrengthNormal);
+    save_key("leaf.key", leafkey);
 
-    QSslCertificate leafcert = builder.signedCertificate(cacert, cakey);
+    CertificateRequestBuilder leafreqbuilder;
+    leafreqbuilder.setVersion(1);
+    leafreqbuilder.setKey(leafkey);
+    leafreqbuilder.addNameEntry(Certificate::EntryCountryName, "GB");
+    leafreqbuilder.addNameEntry(Certificate::EntryOrganizationName, "Westpoint");
+    leafreqbuilder.addNameEntry(Certificate::EntryCommonName, "www.example.com");
 
-    QFile d("leaf.crt");
-    d.open(QIODevice::WriteOnly);
-    d.write(leafcert.toPem());
-    d.close();
+    CertificateRequest leafreq = leafreqbuilder.signedRequest(leafkey);
+    save_request("leaf.req", careq);
+
+    CertificateBuilder leafbuilder;
+    leafbuilder.setRequest(leafreq);
+
+    leafbuilder.setVersion(3);
+    leafbuilder.setSerial("iamaleaf");
+    leafbuilder.setActivationTime(QDateTime::currentDateTimeUtc());
+    leafbuilder.setExpirationTime(QDateTime::currentDateTimeUtc());
+    leafbuilder.setBasicConstraints(false);
+    leafbuilder.addKeyPurpose(CertificateBuilder::PurposeWebServer);
+    leafbuilder.setKeyUsage(CertificateBuilder::UsageKeyAgreement|CertificateBuilder::UsageKeyEncipherment);
+    leafbuilder.addSubjectKeyIdentifier();
+
+    QSslCertificate leafcert = leafbuilder.signedCertificate(cacert, cakey);
+    save_certificate("leaf.crt", leafcert);
 }
