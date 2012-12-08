@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += keybuilder \
-           certificaterequest
+           certificaterequest \
+           certificaterequestbuilder
 
 

@@ -19,6 +19,5 @@ namespace Certificate {
 
 QT_END_NAMESPACE_CERTIFICATE
 
-
 #endif // CERTIFICATE_H
 
