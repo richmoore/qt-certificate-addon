@@ -19,7 +19,14 @@ class Q_CERTIFICATE_EXPORT CertificateBuilder
 {
 public:
     enum KeyPurpose {
-        PurposeWebServer
+        PurposeWebServer,
+        PurposeWebClient,
+        PurposeCodeSigning,
+        PurposeEmailProtection,
+        PurposeTimeStamping,
+        PurposeOcspSigning,
+        PurposeIpsecIke,
+        PurposeAny
     };
 
     enum KeyUsageFlag {

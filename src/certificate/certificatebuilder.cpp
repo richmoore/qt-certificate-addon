@@ -127,6 +127,27 @@ bool CertificateBuilder::addKeyPurpose(KeyPurpose purpose, bool critical)
     case PurposeWebServer:
         ba = QByteArray(GNUTLS_KP_TLS_WWW_SERVER);
         break;
+    case PurposeWebClient:
+        ba = QByteArray(GNUTLS_KP_TLS_WWW_CLIENT);
+        break;
+    case PurposeCodeSigning:
+        ba = QByteArray(GNUTLS_KP_CODE_SIGNING);
+        break;
+    case PurposeEmailProtection:
+        ba = QByteArray(GNUTLS_KP_EMAIL_PROTECTION);
+        break;
+    case PurposeTimeStamping:
+        ba = QByteArray(GNUTLS_KP_TIME_STAMPING);
+        break;
+    case PurposeOcspSigning:
+        ba = QByteArray(GNUTLS_KP_OCSP_SIGNING);
+        break;
+    case PurposeIpsecIke:
+        ba = QByteArray(GNUTLS_KP_IPSEC_IKE);
+        break;
+    case PurposeAny:
+        ba = QByteArray(GNUTLS_KP_ANY);
+        break;
     default:
         qWarning("Unknown Purpose %d", int(purpose));
         return false;
