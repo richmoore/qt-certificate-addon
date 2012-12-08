@@ -119,6 +119,11 @@ bool CertificateBuilder::setBasicConstraints(bool ca, int pathLength)
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Adds the specified purpose to the list of those this certificate may be
+  used for. This method may be called multiple times to add a series of
+  different purposes.
+ */
 bool CertificateBuilder::addKeyPurpose(KeyPurpose purpose, bool critical)
 {
     QByteArray ba;
@@ -156,12 +161,23 @@ bool CertificateBuilder::addKeyPurpose(KeyPurpose purpose, bool critical)
     return addKeyPurpose(ba, critical);
 }
 
+/*!
+  Adds the specified purpose to the list of those this certificate may be
+  used for. This method may be called multiple times to add a series of
+  different purposes. This method differs from the one above by allowing
+  arbitrary OIDs   to be used, not just those for which there is built in
+  support.
+ */
 bool CertificateBuilder::addKeyPurpose(const QByteArray &oid, bool critical)
 {
     d->errno = gnutls_x509_crt_set_key_purpose_oid(d->crt, oid.constData(), critical);
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Sets the key usage flags for the certificate. If you call this method more
+  than once then only the last value will be used by the created certificate.
+ */
 bool CertificateBuilder::setKeyUsage(KeyUsageFlags usages)
 {
     uint usage = 0;
@@ -188,6 +204,10 @@ bool CertificateBuilder::setKeyUsage(KeyUsageFlags usages)
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Adds the subject key identifier extension to the certificate. The key
+  is extracted automatically from the certificate being created.
+ */
 bool CertificateBuilder::addSubjectKeyIdentifier()
 {
     QByteArray ba(128, 0); // Normally 20 bytes (SHA1)
@@ -201,6 +221,11 @@ bool CertificateBuilder::addSubjectKeyIdentifier()
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Adds the authority key identifier extension to the certificate. The key
+  is extracted the specified certificate which must be the one later used
+  to sign the certificate.
+ */
 bool CertificateBuilder::addAuthorityKeyIdentifier(const QSslCertificate &qcacert)
 {
     gnutls_x509_crt_t cacrt = qsslcert_to_crt(qcacert, &d->errno);
@@ -229,6 +254,10 @@ bool CertificateBuilder::addAuthorityKeyIdentifier(const QSslCertificate &qcacer
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Creates a self-signed certificate by signing the certificate with the specified
+  key.
+ */
 QSslCertificate CertificateBuilder::signedCertificate(const QSslKey &qkey)
 {
     gnutls_x509_privkey_t key = qsslkey_to_key(qkey, &d->errno);
@@ -257,6 +286,10 @@ QSslCertificate CertificateBuilder::signedCertificate(const QSslKey &qkey)
     return crt_to_qsslcert(d->crt, &d->errno);    
 }
 
+/*!
+  Creates a certificate signed by the specified CA certificate using the
+  CA key.
+ */
 QSslCertificate CertificateBuilder::signedCertificate(const QSslCertificate &qcacert, const QSslKey &qcakey)
 {
     //

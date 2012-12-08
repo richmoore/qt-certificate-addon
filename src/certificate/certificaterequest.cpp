@@ -123,11 +123,17 @@ int CertificateRequest::version() const
     return gnutls_x509_crq_get_version(d->crq);
 }
 
+/*!
+  Returns the list of entries for the attribute specified.
+ */
 QStringList CertificateRequest::nameEntryInfo(Certificate::EntryType attribute)
 {
     return nameEntryInfo(entrytype_to_oid(attribute));
 }
 
+/*!
+  Returns the list of entries for the attribute specified by the oid.
+ */
 QStringList CertificateRequest::nameEntryInfo(const QByteArray &oid)
 {
     QStringList result;
