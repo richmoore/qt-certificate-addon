@@ -23,15 +23,15 @@ public:
     };
 
     enum KeyUsageFlag {
-        UsageEncipherOnly,
-        UsageCrlSign,
-        UsageKeyCertSign,
-        UsageKeyAgreement,
-        UsageDataEncipherment,
-        UsageKeyEncipherment,
-        UsageNonRepudiation,
-        UsageDigitalSignature,
-        UsageDecipherOnly
+        UsageEncipherOnly = 0x1,
+        UsageCrlSign = 0x2,
+        UsageKeyCertSign = 0x4,
+        UsageKeyAgreement = 0x8,
+        UsageDataEncipherment = 0x10,
+        UsageKeyEncipherment = 0x20,
+        UsageNonRepudiation = 0x40,
+        UsageDigitalSignature = 0x80,
+        UsageDecipherOnly = 0x100
     };
     Q_DECLARE_FLAGS(KeyUsageFlags, KeyUsageFlag)
 

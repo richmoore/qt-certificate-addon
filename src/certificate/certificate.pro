@@ -5,7 +5,7 @@ TARGET = certificate
 
 LIBS += -lgnutls
 DEFINES += QT_CERTIFICATE_LIB
-
+CONFIG += debug
 
 # Input
 SOURCES += certificatebuilder.cpp \
