@@ -20,6 +20,9 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
   Generates a new key using the specified algorithm and strength. The algorithm
   will generally be RSA. The various strengths allow you to specify the trade-off
   between the security of the key and the time involved in creating it.
+
+  Note that this method can take a considerable length of time to execute, so in
+  gui applications it should be run in a worker thread.
  */
 QSslKey KeyBuilder::generate( QSsl::KeyAlgorithm algo, KeyStrength strength )
 {

@@ -123,6 +123,10 @@ int CertificateRequest::version() const
     return gnutls_x509_crq_get_version(d->crq);
 }
 
+/*!
+  Returns the list of attributes that are present in this requests
+  distinguished name. The attributes are returned as OIDs.
+ */
 QList<QByteArray> CertificateRequest::nameEntryAttributes()
 {
     QList<QByteArray> result;
@@ -193,6 +197,9 @@ QByteArray CertificateRequest::toDer()
     return request_to_bytearray(d->crq, GNUTLS_X509_FMT_DER, &d->errno);
 }
 
+/*!
+  Returns a QString containing this request as a human readable string.
+ */
 QString CertificateRequest::toText()
 {
     gnutls_datum_t datum;
