@@ -38,6 +38,7 @@ public:
 
     // TODO: QList<QByteArray>?
     QStringList nameEntryInfo(Certificate::EntryType attribute);
+    QStringList nameEntryInfo(const QByteArray &attribute);
 
     QByteArray toPem();
     QByteArray toDer();

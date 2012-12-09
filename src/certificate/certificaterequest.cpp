@@ -125,8 +125,12 @@ int CertificateRequest::version() const
 
 QStringList CertificateRequest::nameEntryInfo(Certificate::EntryType attribute)
 {
+    return nameEntryInfo(entrytype_to_oid(attribute));
+}
+
+QStringList CertificateRequest::nameEntryInfo(const QByteArray &oid)
+{
     QStringList result;
-    QByteArray oid = entrytype_to_oid(attribute);
     if (oid.isNull())
         return result;
 
