@@ -123,6 +123,27 @@ int CertificateRequest::version() const
     return gnutls_x509_crq_get_version(d->crq);
 }
 
+QList<QByteArray> CertificateRequest::nameEntryAttributes()
+{
+    QList<QByteArray> result;
+
+    int index = 0;
+    do {
+        QByteArray buffer(1024, 0);
+        size_t size = buffer.size();
+
+        d->errno = gnutls_x509_crq_get_dn_oid(d->crq, index, buffer.data(), &size);
+
+        if (GNUTLS_E_SUCCESS == d->errno) {
+            buffer.resize(size);
+            result << buffer;
+        }
+        index++;
+    } while(GNUTLS_E_SUCCESS == d->errno);
+
+    return result;
+}
+
 /*!
   Returns the list of entries for the attribute specified.
  */
@@ -141,9 +162,10 @@ QStringList CertificateRequest::nameEntryInfo(const QByteArray &oid)
         return result;
 
     int index = 0;
-    QByteArray buffer(1024, 0);
-    size_t size = buffer.size();
     do {
+        QByteArray buffer(1024, 0);
+        size_t size = buffer.size();
+
         d->errno = gnutls_x509_crq_get_dn_by_oid(d->crq, oid.constData(), index, false, buffer.data(), &size);
 
         if (GNUTLS_E_SUCCESS == d->errno)

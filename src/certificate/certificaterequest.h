@@ -36,6 +36,8 @@ public:
     // TODO: Include accessors for the fields
     int version() const;
 
+    QList<QByteArray> nameEntryAttributes();
+
     // TODO: QList<QByteArray>?
     QStringList nameEntryInfo(Certificate::EntryType attribute);
     QStringList nameEntryInfo(const QByteArray &attribute);

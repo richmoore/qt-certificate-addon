@@ -11,6 +11,7 @@ class tst_CertificateRequest : public QObject
 private slots:
     void checkNull();
     void loadCrq();
+    void checkEntryAttributes();
     void checkEntries();
 };
 
@@ -36,6 +37,19 @@ void tst_CertificateRequest::loadCrq()
     f2.close();
 
     QVERIFY(filePem == csr.toPem());
+}
+
+void tst_CertificateRequest::checkEntryAttributes()
+{
+    QFile f("requests/test-ocsp-good-req.pem");
+    f.open(QIODevice::ReadOnly);
+    CertificateRequest csr(&f);
+    f.close();
+
+    QList<QByteArray> attrs;
+    attrs << "2.5.4.3" << "2.5.4.8" << "2.5.4.6" << "1.2.840.113549.1.9.1" << "2.5.4.10";
+
+    QCOMPARE(attrs, csr.nameEntryAttributes());
 }
 
 void tst_CertificateRequest::checkEntries()
