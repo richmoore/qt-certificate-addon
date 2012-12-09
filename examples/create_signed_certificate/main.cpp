@@ -84,9 +84,11 @@ int main(int argc, char **argv)
     leafreqbuilder.addNameEntry(Certificate::EntryCountryName, "GB");
     leafreqbuilder.addNameEntry(Certificate::EntryOrganizationName, "Westpoint");
     leafreqbuilder.addNameEntry(Certificate::EntryCommonName, "www.example.com");
+    leafreqbuilder.addSubjectAlternativeNameEntry(QSsl::DnsEntry, "www.example.com");
+    leafreqbuilder.addSubjectAlternativeNameEntry(QSsl::EmailEntry, "test@example.com");
 
     CertificateRequest leafreq = leafreqbuilder.signedRequest(leafkey);
-    save_request("leaf.req", careq);
+    save_request("leaf.req", leafreq);
 
     CertificateBuilder leafbuilder;
     leafbuilder.setRequest(leafreq);
@@ -95,6 +97,7 @@ int main(int argc, char **argv)
     leafbuilder.setSerial("iamaleaf");
     leafbuilder.setActivationTime(QDateTime::currentDateTimeUtc());
     leafbuilder.setExpirationTime(QDateTime::currentDateTimeUtc());
+    leafbuilder.copyRequestExtensions(leafreq);
     leafbuilder.setBasicConstraints(false);
     leafbuilder.addKeyPurpose(CertificateBuilder::PurposeWebServer);
     leafbuilder.setKeyUsage(CertificateBuilder::UsageKeyAgreement|CertificateBuilder::UsageKeyEncipherment);

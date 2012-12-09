@@ -119,4 +119,16 @@ QSslKey key_to_qsslkey(gnutls_x509_privkey_t key, QSsl::KeyAlgorithm algo, int *
     return QSslKey(ba, algo);
 }
 
+gnutls_x509_subject_alt_name_t qssl_altnameentrytype_to_altname(QSsl::AlternateNameEntryType qtype)
+{
+    switch(qtype) {
+    case QSsl::EmailEntry:
+        return GNUTLS_SAN_RFC822NAME;
+    case QSsl::DnsEntry:
+        return GNUTLS_SAN_DNSNAME;
+    default:
+        qWarning("Unknown alternative name type %d", int(qtype));
+    }
+}
+
 QT_END_NAMESPACE_CERTIFICATE

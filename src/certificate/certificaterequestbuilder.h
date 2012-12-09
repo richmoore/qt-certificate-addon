@@ -32,6 +32,8 @@ public:
     bool addNameEntry(Certificate::EntryType type, const QByteArray &value);
     bool addNameEntry(const QByteArray &oid, const QByteArray &value, bool raw=false);
 
+    bool addSubjectAlternativeNameEntry(QSsl::AlternateNameEntryType type, const QByteArray &value);
+
     CertificateRequest signedRequest(const QSslKey &key);
 
 private:

@@ -26,6 +26,8 @@ gnutls_x509_crt_t qsslcert_to_crt(const QSslCertificate &qcert, int *errno);
 QSslCertificate crt_to_qsslcert(gnutls_x509_crt_t crt, int *errno);
 QSslKey key_to_qsslkey(gnutls_x509_privkey_t key, QSsl::KeyAlgorithm algo, int *errno);
 
+gnutls_x509_subject_alt_name_t qssl_altnameentrytype_to_altname(QSsl::AlternateNameEntryType qtype);
+
 QT_END_NAMESPACE_CERTIFICATE
 
 #endif // UTILS_P_H
