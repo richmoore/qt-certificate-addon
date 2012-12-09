@@ -236,7 +236,7 @@ bool CertificateBuilder::addAuthorityKeyIdentifier(const QSslCertificate &qcacer
     size_t size = ba.size();
 
     // Try using the subject keyid
-    d->errno = gnutls_x509_crt_get_subject_key_id (cacrt, reinterpret_cast<unsigned char *>(ba.data()), &size, NULL);
+    d->errno = gnutls_x509_crt_get_subject_key_id(cacrt, reinterpret_cast<unsigned char *>(ba.data()), &size, NULL);
 
     // Or fallback to creating it
     if (GNUTLS_E_SUCCESS != d->errno) {
@@ -275,7 +275,6 @@ QSslCertificate CertificateBuilder::signedCertificate(const QSslKey &qkey)
 
     gnutls_privkey_import_x509(abstractKey, key, GNUTLS_PRIVKEY_IMPORT_AUTO_RELEASE);
 
-    // TODO: self sign only for now
     d->errno = gnutls_x509_crt_privkey_sign(d->crt, d->crt, abstractKey, GNUTLS_DIG_SHA1, 0);
 
     gnutls_x509_privkey_deinit(key);
