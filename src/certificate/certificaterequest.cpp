@@ -193,4 +193,18 @@ QByteArray CertificateRequest::toDer()
     return request_to_bytearray(d->crq, GNUTLS_X509_FMT_DER, &d->errno);
 }
 
+QString CertificateRequest::toText()
+{
+    gnutls_datum_t datum;
+    d->errno = gnutls_x509_crq_print(d->crq, GNUTLS_CRT_PRINT_FULL, &datum);
+
+    if (GNUTLS_E_SUCCESS != d->errno)
+        return QString();
+
+    QString result = QString::fromUtf8(reinterpret_cast<const char *>(datum.data), datum.size);
+    gnutls_free(datum.data);
+
+    return result;
+}
+
 QT_END_NAMESPACE_CERTIFICATE

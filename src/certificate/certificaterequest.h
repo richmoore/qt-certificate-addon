@@ -44,6 +44,7 @@ public:
 
     QByteArray toPem();
     QByteArray toDer();
+    QString toText();
 
 private:
     friend class CertificateRequestPrivate;
