@@ -61,6 +61,7 @@ QSslKey KeyBuilder::generate( QSsl::KeyAlgorithm algo, KeyStrength strength )
     QSslKey qkey = key_to_qsslkey(key, algo, &errno);
     if (GNUTLS_E_SUCCESS != errno) {
         qWarning("Failed to convert key to bytearray %s", gnutls_strerror(errno));
+        gnutls_x509_privkey_deinit(key);
         return QSslKey();
     }
     
