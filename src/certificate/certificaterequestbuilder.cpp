@@ -86,6 +86,64 @@ bool CertificateRequestBuilder::setKey(const QSslKey &qkey)
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+/*!
+  Returns the list of attributes that are present in this requests
+  distinguished name. The attributes are returned as OIDs.
+ */
+QList<QByteArray> CertificateRequestBuilder::nameEntryAttributes()
+{
+    QList<QByteArray> result;
+
+    int index = 0;
+    do {
+        QByteArray buffer(1024, 0);
+        size_t size = buffer.size();
+
+        d->errno = gnutls_x509_crq_get_dn_oid(d->crq, index, buffer.data(), &size);
+
+        if (GNUTLS_E_SUCCESS == d->errno) {
+            buffer.resize(size);
+            result << buffer;
+        }
+        index++;
+    } while(GNUTLS_E_SUCCESS == d->errno);
+
+    return result;
+}
+
+/*!
+  Returns the list of entries for the attribute specified.
+ */
+QStringList CertificateRequestBuilder::nameEntryInfo(Certificate::EntryType attribute)
+{
+    return nameEntryInfo(entrytype_to_oid(attribute));
+}
+
+/*!
+  Returns the list of entries for the attribute specified by the oid.
+ */
+QStringList CertificateRequestBuilder::nameEntryInfo(const QByteArray &oid)
+{
+    QStringList result;
+    if (oid.isNull())
+        return result;
+
+    int index = 0;
+    do {
+        QByteArray buffer(1024, 0);
+        size_t size = buffer.size();
+
+        d->errno = gnutls_x509_crq_get_dn_by_oid(d->crq, oid.constData(), index, false, buffer.data(), &size);
+
+        if (GNUTLS_E_SUCCESS == d->errno)
+            result << QString::fromUtf8(buffer);
+
+        index++;
+    } while(GNUTLS_E_SUCCESS == d->errno);
+
+    return result;
+}
+
 bool CertificateRequestBuilder::addNameEntry(Certificate::EntryType type, const QByteArray &value)
 {
     QByteArray oid = entrytype_to_oid(type);

@@ -4,6 +4,7 @@
 #define CERTIFICATEREQUESTBUILDER_H
 
 #include <QSslKey>
+#include <QStringList>
 
 #include "certificaterequest.h"
 #include "certificate.h"
@@ -31,6 +32,10 @@ public:
 
     bool addNameEntry(Certificate::EntryType type, const QByteArray &value);
     bool addNameEntry(const QByteArray &oid, const QByteArray &value, bool raw=false);
+
+    QList<QByteArray> nameEntryAttributes();
+    QStringList nameEntryInfo(Certificate::EntryType attribute);
+    QStringList nameEntryInfo(const QByteArray &attribute);
 
     bool addSubjectAlternativeNameEntry(QSsl::AlternateNameEntryType type, const QByteArray &value);
 
