@@ -19,6 +19,9 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
   the value returned is positive (ie. that the first bit is 0). This means
   that you get one less bit of entropy than requested, but avoids
   interoperability issues.
+
+  Note that this method will either return the number of bytes requested,
+  or a null QByteArray. It will never return a smaller number.
  */
 QByteArray RandomGenerator::getPositiveBytes(int size)
 {
