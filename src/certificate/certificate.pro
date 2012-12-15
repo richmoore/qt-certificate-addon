@@ -12,7 +12,8 @@ SOURCES += certificatebuilder.cpp \
            certificaterequestbuilder.cpp \
            certificaterequest.cpp \
            keybuilder.cpp \
-           utils.cpp
+           utils.cpp \
+           randomgenerator.cpp
 
 
 

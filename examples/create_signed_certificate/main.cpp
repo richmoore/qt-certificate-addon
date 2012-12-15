@@ -1,6 +1,7 @@
 #include <QByteArray>
 #include <QFile>
 #include <QDateTime>
+#include <QDebug>
 #include <QSslKey>
 #include <QSslCertificate>
 
@@ -8,6 +9,7 @@
 #include "certificaterequestbuilder.h"
 #include "certificaterequest.h"
 #include "certificatebuilder.h"
+#include "randomgenerator.h"
 #include "certificate.h"
 
 QT_USE_NAMESPACE_CERTIFICATE
@@ -62,7 +64,7 @@ int main(int argc, char **argv)
     cabuilder.setRequest(careq);
 
     cabuilder.setVersion(3);
-    cabuilder.setSerial("helloworld");
+    cabuilder.setSerial(RandomGenerator::getPositiveBytes(16));
     cabuilder.setActivationTime(QDateTime::currentDateTimeUtc());
     cabuilder.setExpirationTime(QDateTime::currentDateTimeUtc());
     cabuilder.setBasicConstraints(true);
@@ -94,7 +96,7 @@ int main(int argc, char **argv)
     leafbuilder.setRequest(leafreq);
 
     leafbuilder.setVersion(3);
-    leafbuilder.setSerial("iamaleaf");
+    leafbuilder.setSerial(RandomGenerator::getPositiveBytes(16));
     leafbuilder.setActivationTime(QDateTime::currentDateTimeUtc());
     leafbuilder.setExpirationTime(QDateTime::currentDateTimeUtc());
     leafbuilder.copyRequestExtensions(leafreq);
