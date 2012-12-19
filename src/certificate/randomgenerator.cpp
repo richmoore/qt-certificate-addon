@@ -1,5 +1,8 @@
 #include <QFile>
 
+#include <gnutls/gnutls.h>
+#include <gnutls/crypto.h>
+
 #include "randomgenerator.h"
 
 QT_BEGIN_NAMESPACE_CERTIFICATE
@@ -9,8 +12,8 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
   \brief The RandomGenerator class is a tool for creating hard random numbers.
 
   The RandomGenerator class provides a source of secure random numbers using
-  the system's random source (/dev/random on UNIX). The numbers are suitable
-  for uses such as certificate serial numbers.
+  the gnutls rnd API. The numbers are suitable for uses such as certificate
+  serial numbers.
 */
 
 /*!
@@ -25,23 +28,17 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
  */
 QByteArray RandomGenerator::getPositiveBytes(int size)
 {
-    // TODO: Steal win32 version from peppe's change
+    QByteArray result(size, 0);
 
-#if defined(Q_OS_UNIX)
-    QFile randomDevice(QLatin1String("/dev/random"));
-    randomDevice.open(QIODevice::ReadOnly|QIODevice::Unbuffered);
-
-    QByteArray result = randomDevice.read(size);
-    if (result.size() != size)
-        return QByteArray(); // We return what's asked for or not at all
+    int errno = gnutls_rnd(GNUTLS_RND_RANDOM, result.data(), size);
+    if (GNUTLS_E_SUCCESS != errno)
+        return QByteArray();
 
     // Clear the top bit to ensure the number is positive
     char *data = result.data();
     *data = *data & 0x07f;
 
     return result;
-#endif
-    return QByteArray();
 }
 
 QT_END_NAMESPACE_CERTIFICATE
