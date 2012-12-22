@@ -37,7 +37,11 @@ public:
     QStringList nameEntryInfo(Certificate::EntryType attribute);
     QStringList nameEntryInfo(const QByteArray &attribute);
 
+#if QT_VERSION >= 0x050000
+    bool addSubjectAlternativeNameEntry(QSsl::AlternativeNameEntryType type, const QByteArray &value);
+#else
     bool addSubjectAlternativeNameEntry(QSsl::AlternateNameEntryType type, const QByteArray &value);
+#endif
 
     CertificateRequest signedRequest(const QSslKey &key);
 

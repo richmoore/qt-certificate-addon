@@ -119,6 +119,19 @@ QSslKey key_to_qsslkey(gnutls_x509_privkey_t key, QSsl::KeyAlgorithm algo, int *
     return QSslKey(ba, algo);
 }
 
+#if QT_VERSION >= 0x050000
+gnutls_x509_subject_alt_name_t qssl_altnameentrytype_to_altname(QSsl::AlternativeNameEntryType qtype)
+{
+    switch(qtype) {
+    case QSsl::EmailEntry:
+        return GNUTLS_SAN_RFC822NAME;
+    case QSsl::DnsEntry:
+        return GNUTLS_SAN_DNSNAME;
+    default:
+        qWarning("Unknown alternative name type %d", int(qtype));
+    }
+}
+#else
 gnutls_x509_subject_alt_name_t qssl_altnameentrytype_to_altname(QSsl::AlternateNameEntryType qtype)
 {
     switch(qtype) {
@@ -130,5 +143,6 @@ gnutls_x509_subject_alt_name_t qssl_altnameentrytype_to_altname(QSsl::AlternateN
         qWarning("Unknown alternative name type %d", int(qtype));
     }
 }
+#endif
 
 QT_END_NAMESPACE_CERTIFICATE

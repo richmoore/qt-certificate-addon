@@ -160,6 +160,15 @@ bool CertificateRequestBuilder::addNameEntry(const QByteArray &oid, const QByteA
     return GNUTLS_E_SUCCESS == d->errno;
 }
 
+#if QT_VERSION >= 0x050000
+bool CertificateRequestBuilder::addSubjectAlternativeNameEntry(QSsl::AlternativeNameEntryType qtype, const QByteArray &value)
+{
+    gnutls_x509_subject_alt_name_t type = qssl_altnameentrytype_to_altname(qtype);
+
+    d->errno = gnutls_x509_crq_set_subject_alt_name(d->crq, type, value.constData(), value.size(), GNUTLS_FSAN_APPEND);
+    return GNUTLS_E_SUCCESS == d->errno;
+}
+#else
 bool CertificateRequestBuilder::addSubjectAlternativeNameEntry(QSsl::AlternateNameEntryType qtype, const QByteArray &value)
 {
     gnutls_x509_subject_alt_name_t type = qssl_altnameentrytype_to_altname(qtype);
@@ -167,7 +176,7 @@ bool CertificateRequestBuilder::addSubjectAlternativeNameEntry(QSsl::AlternateNa
     d->errno = gnutls_x509_crq_set_subject_alt_name(d->crq, type, value.constData(), value.size(), GNUTLS_FSAN_APPEND);
     return GNUTLS_E_SUCCESS == d->errno;
 }
-
+#endif
 
 /*!
   Signs the request with the specified key and returns the signed request.
