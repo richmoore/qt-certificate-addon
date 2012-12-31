@@ -13,6 +13,9 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
   signing requests.
 */
 
+/*!
+  Create a new CertificateRequestBuilder.
+*/
 CertificateRequestBuilder::CertificateRequestBuilder()
     : d(new CertificateRequestBuilderPrivate)
 {
@@ -22,6 +25,9 @@ CertificateRequestBuilder::CertificateRequestBuilder()
     d->errno = GNUTLS_E_SUCCESS;
 }
 
+/*!
+  Cleans up a CertificateRequestBuilder.
+*/
 CertificateRequestBuilder::~CertificateRequestBuilder()
 {
     gnutls_x509_crq_deinit(d->crq);
@@ -144,6 +150,12 @@ QStringList CertificateRequestBuilder::nameEntryInfo(const QByteArray &oid)
     return result;
 }
 
+/*!
+  Adds an entry to the distinguished name of the certificate signing request. The
+  \a type parameter specifies the field that will be added, and the \a value
+  parameter specifies the value. This method can be called multiple times with the
+  same \a type and will add additional entries.
+ */
 bool CertificateRequestBuilder::addNameEntry(Certificate::EntryType type, const QByteArray &value)
 {
     QByteArray oid = entrytype_to_oid(type);
@@ -153,6 +165,14 @@ bool CertificateRequestBuilder::addNameEntry(Certificate::EntryType type, const 
     return addNameEntry(oid, value);
 }
 
+/*!
+  Adds an entry to the distinguished name of the certificate signing request. The
+  \a oid parameter specifies the ASN.1 OID of the field that will be added, and
+  the \a value parameter specifies the value. If the \a raw flag is set to true
+  then OIDs not understood by GNUTLS may be added, and the value must be DER
+  encoded.  This method can be called multiple times with the same \a type and
+  will add additional entries.
+ */
 bool CertificateRequestBuilder::addNameEntry(const QByteArray &oid, const QByteArray &value, bool raw)
 {
     d->errno = gnutls_x509_crq_set_dn_by_oid(d->crq, oid.constData(), raw,

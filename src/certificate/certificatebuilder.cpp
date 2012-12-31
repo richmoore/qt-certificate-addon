@@ -17,6 +17,9 @@ QT_BEGIN_NAMESPACE_CERTIFICATE
   \brief The CertificateBuilder class is a tool for creating X.509 certificates.
 */
 
+/*!
+  Creates a new CertificateBuilder.
+ */
 CertificateBuilder::CertificateBuilder()
     : d(new CertificateBuilderPrivate)
 {
@@ -24,6 +27,9 @@ CertificateBuilder::CertificateBuilder()
     d->errno = gnutls_x509_crt_init(&d->crt);
 }
 
+/*!
+  Cleans up a CertificateBuilder.
+ */
 CertificateBuilder::~CertificateBuilder()
 {
     gnutls_x509_crt_deinit(d->crt);
